@@ -68,7 +68,7 @@ git checkout -b your-feature-name
 
 ## Collborators
 Raeedah Musa – 📧 [raeedahmusa@gmail.com ]
-
+Agoro Temitope - tope0607@gmail.com
 
 License
 
