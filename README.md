@@ -37,7 +37,7 @@ The project is split into 5 main roles:
 
 bash
 # Clone the repo
-git clone https://github.com/<your-username>/email-summarizer.git
+git clone https://github.com/Esme-raida/email-summarizer.git
 cd email-summarizer
 
 # Install dependencies
@@ -67,8 +67,7 @@ git checkout -b your-feature-name
 
 
 ## Collborators
-Raeedah Musa – Data cleaning & preparation lead
-📧 [raeedahmusa@gmail.com ]
+Raeedah Musa – 📧 [raeedahmusa@gmail.com ]
 
 
 License
