@@ -9,7 +9,7 @@ A collaborative NLP project that automatically summarizes long emails into short
 This Email Summarizer helps users quickly understand the key points of lengthy emails by generating concise summaries. It uses *extractive summarization techniques* to identify and select the most important sentences from the email body.
 
 The project is split into 5 main roles:
-1. *Data Collection & Cleaning* (✅ Done by Raeedah)
+1. *Data Collection & Cleaning*
 2. *Text Preprocessing & Feature Extraction*
 3. *Extractive Summarization (TF-IDF / Frequency-based)*
 4. *Evaluation of Summary Quality*
