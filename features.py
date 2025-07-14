@@ -2,7 +2,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def extract_tfidf_features(texts):
     
-    
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(texts)
     feature_names = vectorizer.get_feature_names_out()
