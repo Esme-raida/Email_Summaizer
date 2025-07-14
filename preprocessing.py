@@ -40,7 +40,7 @@ def extract_email_fields(message):
     except:
         print("Failed to extract 'to'")
     try:
-        fields["subject"] = re.search(r"Subject:\s*(.*)", message, re.IGNORECASE).group(1).split("\n")[0]
+        fields["subject"] = re.search(r"^Subject:\s*(.*)", message, re.IGNORECASE | re.MULTILINE)
     except:
         print("Failed to extract subject")
     try:
@@ -68,10 +68,7 @@ def clean_email_text(text):
     # Remove reply markers and headers
     text = re.sub(r"(?i)^.*Forwarded by.*$", "", text, flags=re.MULTILINE)
     text = re.sub(r"(?i)^.*----+Original Message----+.*$", "", text, flags=re.MULTILINE)
-    text = re.sub(r"(?i)^.*From:.*$", "", text, flags=re.MULTILINE)
-    text = re.sub(r"(?i)^.*To:.*$", "", text, flags=re.MULTILINE)
-    text = re.sub(r"(?i)^.*Subject:.*$", "", text, flags=re.MULTILINE)
-    text = re.sub(r"(?i)^.*Sent:.*$", "", text, flags=re.MULTILINE)
+    re.sub(r"(?im)^\s*(From|To|Subject|Sent):\s+.+$", "", text)
     # Remove metadata-style header lines
     header_keywords = [
         "Message-ID:", "Date:", "From:", "To:", "Subject:", "Mime-Version:",
@@ -128,7 +125,7 @@ def final_email_filter(df,
         lambda x: sum(x.count(p) for p in placeholders)
     )
     df["placeholder_ratio"] = df["placeholder_count"] / df["length"]
-    df = df[df["placeholder_ratio"] <= max_placeholder_ratio]
+    df = df[~((df["length"] < 150) & (df["placeholder_ratio"] > 0.3))]
     print("After placeholder ratio filter:", len(df))
     
     symbol_chars = set("@#$%^&*+=~|<>/")
@@ -138,7 +135,11 @@ def final_email_filter(df,
     df["symbol_ratio"] = df["symbol_count"] / df["length"]
     df = df[df["symbol_ratio"] <= max_symbol_ratio]
     print("After symbol ratio filter:", len(df))
-    
+
+    df["unique_word_ratio"] = df[text_col].apply(lambda x: len(set(x.split())) / len(x.split()) if len(x.split()) > 0 else 0)
+    df = df[df["unique_word_ratio"] > 0.5]
+    print("After unique word ratio filter:", len(df))
+ 
     df["has_sentence"] = df[text_col].str.contains(r"[.!?]")
     df = df[df["has_sentence"]]
     print("After sentence punctuation filter:", len(df))
@@ -160,7 +161,7 @@ def final_email_filter(df,
 ###like, the sender sends and receives reply all in a message/thread 
 ###find marker markers(e.g. From) to seperate different emails
 def split_email_chain(cleaned_text):
-    split_patterns = r"(?i)(?=\nFrom: )|(?=\n-+Original Message-+)|(?=\nSent: )"
+    split_patterns = r"(?=\nFrom: .+\nSent: .+\nTo: .+\nSubject:)"
     parts = re.split(split_patterns, cleaned_text)
     return [part.strip() for part in parts if part.strip()]
 
